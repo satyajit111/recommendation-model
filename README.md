@@ -1,50 +1,24 @@
-import pickle
-import csv
-from sklearn.feature_extraction.text import TfidfVectorizer
 
-fitted_vectorizer = None
+**TF-IDF Vector Serialization**
 
-def fit_vectorizer_with_inputs(input_strings):
-    global fitted_vectorizer
-    fitted_vectorizer = TfidfVectorizer()
-    fitted_vectorizer.fit(input_strings)
+This Python script is designed to serialize text strings into TF-IDF vectors and store them for future use. It utilizes the `TfidfVectorizer` from `scikit-learn` to convert strings into vectors based on their term frequency-inverse document frequency. The script is capable of both fitting the vectorizer with new input strings and transforming any user-provided string into a serialized vector.
 
-def take_input():
-    user_input = input("Enter a string to convert into vector using TF-IDF: ")
-    return user_input
+**Features:**
+- **Fit Vectorizer**: The `fit_vectorizer_with_inputs` function takes a list of strings and fits the TF-IDF vectorizer.
+- **User Input**: The `take_input` function prompts the user to enter a string to be vectorized.
+- **String to Vector**: The `string_to_vector` function transforms the user input string into a TF-IDF vector.
+- **CSV Storage**: The `store_csv` function appends the vectorized data to a CSV file, enabling easy storage and retrieval.
+- **Pickle Serialization**: The script serializes the vector into a `.pkl` file using the `pickle` module, ensuring that the vector can be deserialized for later use.
+---
+**Workflow:**
+1. Load existing strings from a CSV file.
+2. Fit the TF-IDF vectorizer with these strings.
+3. Take a new string input from the user.
+4. Convert the input string into a TF-IDF vector.
+5. Serialize the vector into a `.pkl` file.
+6. Store the vector in a CSV file as a single column.
 
-def string_to_vector(string):
-    global fitted_vectorizer
-    vector = fitted_vectorizer.transform([string])
-    return vector
+This script is particularly useful for natural language processing tasks where text data needs to be converted into a numerical format that machine learning models can work with.
 
-def store_csv(data):
-    with open('data.csv', 'a', newline='') as csvfile:
-        writer = csv.writer(csvfile)
-        writer.writerow(data)
+---
 
-def main():
-    # Load existing strings from CSV
-    existing_strings = []
-    with open('data.csv', 'r') as csvfile:
-        reader = csv.reader(csvfile)
-        for row in reader:
-            existing_strings.append(row[0])
-
-    # Fit the vectorizer with the existing strings
-    fit_vectorizer_with_inputs(existing_strings)
-
-    user_input = take_input()
-    vector = string_to_vector(user_input)
-
-    with open('vector.pkl', 'wb') as file:
-        pickle.dump(vector, file)
-    print("Vector has been stored in 'vector.pkl' file.")
-
-    # Convert vector to array and then list for CSV storage
-    vector_list = vector.toarray().tolist()
-    store_csv(vector_list)
-    print("Vector has been stored in 'data.csv' file as a single column.")
-
-if __name__ == "__main__":
-    main()
